@@ -5,4 +5,4 @@
   tasks:
     - name: "Include ansible-mysql57"
       include_role:
-        name: "ansible-mysql57"
+        name: nyomo.mysql57
