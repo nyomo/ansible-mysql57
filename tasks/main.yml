@@ -34,6 +34,24 @@
   shell: cat /var/log/mysqld.log | tail -1 |grep 'temporary password is generated for root'|cut -d '@' -f 2|cut -d ' ' -f 2
   register: mysqld_root_init_pass
   changed_when: no
+- name: Change MySQL root user password
+  shell: |
+   mysql -u root -p'{{ mysqld_root_init_pass.stdout }}' --connect-expired-password -e "set password for root@'localhost'=password('{{ mysql_root_password }}');"
+  register: root_password_change
+  failed_when: false
+  changed_when: false
 - name: debug
-  debug: var=mysqld_root_init_pass 
-
+  debug: var=root_password_change.stderr_lines
+- name: set root .my.cnf
+  template:
+    src: root.my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0644
+  when: >
+    (root_password_change.stderr_lines[1] is not defined) or 
+    ("ERROR 1045 " in root_password_change.stderr_lines[1])
+- name: Check MySQL root connection
+  mysql_info:
+    login_user: root
