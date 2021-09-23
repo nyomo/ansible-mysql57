@@ -31,7 +31,7 @@
     enabled: yes
   when: not is_docker.stdout | bool
 - name: get mysql initial root password
-  shell: cat /var/log/mysqld.log | tail -1 |grep 'temporary password is generated for root'|cut -d '@' -f 2|cut -d ' ' -f 2
+  shell: cat /var/log/mysqld.log |grep 'temporary password is generated for root'|tail -1|cut -d '@' -f 2|cut -d ' ' -f 2
   register: mysqld_root_init_pass
   changed_when: no
 - name: Change MySQL root user password
