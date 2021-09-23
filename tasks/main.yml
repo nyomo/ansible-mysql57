@@ -1,0 +1,33 @@
+---
+# tasks file for ansible-mysql57
+#
+- name: check mysql root passowrd is set
+  assert:
+    that:
+      - "mysql_root_password is defined"
+- name: check mysql root passowrd is not empty
+  assert:
+    that:
+      - not mysql_root_password | bool
+- name: check running on docker?
+  shell: ls -l /.dockerenv | wc -l
+  register: is_docker
+  changed_when: no
+- name: Include install packages
+  include_tasks: install_centos7.yml
+- name: boot MySQL docker
+  include_tasks: boot_docker_centos7.yml
+  when: is_docker.stdout | bool
+- name: boot MySQL systemd
+  systemd:
+    name: mysqld.service
+    state: started
+    enabled: yes
+  when: not is_docker.stdout | bool
+- name: get mysql initial root password
+  shell: cat /var/log/mysqld.log | tail -1 |grep 'temporary password is generated for root'|cut -d '@' -f 2|cut -d ' ' -f 2
+  register: mysqld_root_init_pass
+  changed_when: no
+- name: debug
+  debug: var=mysqld_root_init_pass 
+

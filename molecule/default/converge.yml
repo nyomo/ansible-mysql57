@@ -1,0 +1,8 @@
+---
+- name: Converge
+  hosts: all
+  vars_files: vars/main.yml
+  tasks:
+    - name: "Include ansible-mysql57"
+      include_role:
+        name: "ansible-mysql57"

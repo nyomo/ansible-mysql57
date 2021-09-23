@@ -1,0 +1,12 @@
+---
+- name: mysqld ExecStartPre
+  command: /usr/bin/mysqld_pre_systemd
+  changed_when: no
+- name: Check mysqld pid file
+  stat: 
+    path: /var/run/mysqld/mysqld.pid
+  register: mysqld_pid
+  changed_when: no
+- name: boot MySQL on Docker
+  command: "sudo -u mysql /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid --explicit_defaults_for_timestamp"
+  when: mysqld_pid.stat.exists == false
