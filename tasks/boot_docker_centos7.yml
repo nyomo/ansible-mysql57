@@ -9,4 +9,4 @@
   changed_when: no
 - name: boot MySQL on Docker
   command: "sudo -u mysql /usr/sbin/mysqld --daemonize --pid-file=/var/run/mysqld/mysqld.pid --explicit_defaults_for_timestamp"
-  when: mysqld_pid.stat.exists == false
+  when: not mysqld_pid.stat.exists
