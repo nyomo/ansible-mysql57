@@ -12,7 +12,7 @@
 - name: check running on docker?
   shell: set -o pipefail | ls -l /.dockerenv | wc -l
   register: is_docker
-  changed_when: no
+  changed_when: false
 - name: Include install packages task
   include_tasks: install_centos7.yml
 - name: Change default authentication plugin
@@ -28,12 +28,12 @@
   systemd:
     name: mysqld.service
     state: started
-    enabled: yes
+    enabled: true
   when: not is_docker.stdout | bool
 - name: get mysql initial root password
   shell: set -o pipefail | cat /var/log/mysqld.log |grep 'temporary password is generated for root'|tail -1|cut -d '@' -f 2|cut -d ' ' -f 2
   register: mysqld_root_init_pass
-  changed_when: no
+  changed_when: false
 - name: Change MySQL root user password
   shell: |
    mysql -u root -p'{{ mysqld_root_init_pass.stdout }}' --connect-expired-password -e "set password for root@'localhost'=password('{{ mysql_root_password }}');"
