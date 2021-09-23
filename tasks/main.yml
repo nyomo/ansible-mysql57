@@ -13,7 +13,7 @@
   shell: ls -l /.dockerenv | wc -l
   register: is_docker
   changed_when: no
-- name: Include install packages
+- name: Include install packages task
   include_tasks: install_centos7.yml
 - name: Change default authentication plugin
   lineinfile:
