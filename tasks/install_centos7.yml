@@ -1,9 +1,11 @@
 ---
 - name: Install MySQL Repo
+  become: yes
   yum:
     name: http://dev.mysql.com/get/mysql57-community-release-el7-7.noarch.rpm
     state: present
 - name: Install MySQL 5.7
+  become: yes
   yum:
     name:
       - mysql-community-server
