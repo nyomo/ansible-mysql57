@@ -16,6 +16,7 @@
 - name: Include install packages task
   include_tasks: install_centos7.yml
 - name: Change default authentication plugin
+  become: yes
   lineinfile:
     path: /etc/my.cnf
     regexp: '^ *default-authentication-plugin='
@@ -25,12 +26,14 @@
   include_tasks: boot_docker_centos7.yml
   when: is_docker.stdout | bool
 - name: boot MySQL systemd
+  become: yes
   systemd:
     name: mysqld.service
     state: started
     enabled: true
   when: not is_docker.stdout | bool
 - name: get mysql initial root password
+  become: yes
   shell: set -o pipefail | cat /var/log/mysqld.log |grep 'temporary password is generated for root'|tail -1|cut -d '@' -f 2|cut -d ' ' -f 2
   register: mysqld_root_init_pass
   changed_when: false
@@ -43,6 +46,7 @@
 - name: debug
   debug: var=root_password_change.stderr_lines
 - name: set root .my.cnf
+  become: yes
   template:
     src: root.my.cnf
     dest: /root/.my.cnf
