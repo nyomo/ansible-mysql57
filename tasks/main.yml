@@ -57,5 +57,6 @@
     (root_password_change.stderr_lines[1] is not defined) or 
     ("ERROR 1045 " in root_password_change.stderr_lines[1])
 - name: Check MySQL root connection
+  become: yes
   mysql_info:
     login_user: root
